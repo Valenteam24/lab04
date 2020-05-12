@@ -23,7 +23,7 @@ bool string_less(string_t str1, string_t str2);
 /* Returns true if [str1] is equal to [str2], or false otherwise. */
 bool string_eq(string_t str1, string_t str2);
 
-/* Retuns a clone of the string [str] */
+/* Returns a clone of the string [str] */
 string_t string_clone(string_t str);
 
 /* Destroys the string, freeing all the allocated resources */

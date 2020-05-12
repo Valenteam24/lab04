@@ -11,7 +11,7 @@ struct _node_t {
 
 dict_t dict_empty() {
     dict_t dict = NULL;
-    /* needs implementation */
+    dict = (dict_t)malloc(sizeof(struct _node_t));
     assert(dict != NULL && dict_length(dict) == 0);
     return dict;
 }

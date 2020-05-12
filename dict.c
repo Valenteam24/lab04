@@ -14,6 +14,7 @@ dict_t dict_empty() {
     dict = (dict_t)malloc(sizeof(struct _node_t));
     dict->key = dict->value = NULL;
     assert(dict != NULL && dict_length(dict) == 0);
+
     return dict;
 }
 
@@ -75,14 +76,49 @@ unsigned int dict_length(dict_t dict) {
 
 dict_t dict_remove(dict_t dict, key_t word) {
     assert(dict != NULL && word != NULL);
-    /* needs implementation */
+    if (string_less(dict->key,word)){
+        dict->key = dict_remove(dict->left,word);
+    } else if (string_less(word,dict->right)){
+        dict->key = dict_remove(dict->right,word);
+    } else if(string_eq(dict->key,word)){
+        if ((dict->left->key==NULL)&&(dict->left->value==NULL)){
+            dict_t daux = dict_copy(dict);
+            daux = dict->right;
+            free(dict);
+        }else if((dict->right->key==NULL)&&(dict->right->value==NULL)){
+            dict_t daux = dict_copy(dict);
+            daux = dict->left;
+            free(dict);
+        }
+        dict_t daux = dict_copy(dict);
+        daux = dict_min_node(dict->right);
+        dict->key = daux ->key;
+        dict->right = dict_remove(dict->right,daux->key);
+    }
     assert(dict != NULL && !dict_exists(dict, word));
     return dict;
+} // no preguntes está horrible tengo miedo :(
+
+static key_t dict_min_node(dict_t dict){
+    key_t min;
+    if(dict->right->key!=NULL){
+    min = disc_min_node(dict->right);
+    }
+    else{
+    min = dict->key;
+    }
+    return min;
 }
 
 dict_t dict_remove_all(dict_t dict) {
     assert(dict != NULL);
-    /* needs implementation */
+    if ((dict->left->key==NULL)&&(dict->right->key==NULL)){
+        dict=dict_remove(dict,dict->key);
+    }
+    else{
+        dict=dict_remove_all(dict->left);
+        dict=dict_remove_all(dict->right);
+    }
     assert(dict != NULL && dict_length(dict) == 0);
     return dict;
 }
@@ -92,6 +128,7 @@ void dict_dump(dict_t dict, FILE *file) {
     dict = dict_from_file(file);
 
     string_dump(dict->key,file);
+    string_dump(dict->value,file);
     dict_dump(dict->left,file);
     dict_dump(dict->right,file);
     assert(dict != NULL);

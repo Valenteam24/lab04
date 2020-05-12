@@ -79,12 +79,53 @@ unsigned int dict_length(dict_t dict) {
     return length;
 }
 
+
 dict_t dict_remove(dict_t dict, key_t word) {
     assert(dict != NULL && word != NULL);
+    if (string_less(dict->key,word)){
+
+        dict->key = dict_remove(dict->left,word);
+
+    } else if (string_less(word,dict->right)){
+
+        dict->key = dict_remove(dict->right,word);
+
+    } else{
+
+        if (dict->left->key==NULL){
+            dict_t daux = dict->right;
+            string_destroy(dict->key);
+            string_destroy(dict->value);
+            free(dict);
+            dict = daux;
+
+        }else if(dict->right->key==NULL){
+            dict_t daux = dict->left;
+            string_destroy(dict->key);
+            string_destroy(dict->value);
+            free(dict);
+            dict = daux; //no se si es asi, deberia ser un return daux
+        }
+        else{
+            dict_t daux = dict_min_node(dict->right);
+            dict->key = daux->key;
+            dict->right = dict_remove(dict->right,daux->key);
+        }
+    }
     assert(dict != NULL && !dict_exists(dict, word));
     return dict;
+} // no preguntes está horrible tengo miedo :(
+dict_t dict_min_node(dict_t dict){
+    dict_t min;
+    if(dict->right->key!=NULL){
+    min = disc_min_node(dict->right);
+    }
+    else{
+    min->key = dict->key;
+    min->value = dict->value;
+    }
+    return min;
 }
-
 dict_t dict_remove_all(dict_t dict) {
     assert(dict != NULL);
     if ((dict->left->key==NULL)&&(dict->right->key==NULL))
@@ -98,11 +139,11 @@ dict_t dict_remove_all(dict_t dict) {
     assert(dict != NULL && dict_length(dict) == 0);
     return dict;
 }
-
 void dict_dump(dict_t dict, FILE *file) {
     assert(dict != NULL && file != NULL);
     dict = dict_from_file(file);
     string_dump(dict->key,file);
+    string_dump(dict->value,file);
     dict_dump(dict->left,file);
     dict_dump(dict->right,file);
     assert(dict != NULL);

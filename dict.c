@@ -101,14 +101,17 @@ dict_t dict_remove_all(dict_t dict) {
 
 void dict_dump(dict_t dict, FILE *file) {
     assert(dict != NULL && file != NULL);
-    /* needs implementation */
+    dict = dict_from_file(file);
+    string_dump(dict->key,file);
+    dict_dump(dict->left,file);
+    dict_dump(dict->right,file);
     assert(dict != NULL);
 }
 
 dict_t dict_destroy(dict_t dict) {
     assert(dict != NULL);
-    /* needs implementation */
+    dict=dict_remove_all;
+    free(dict);
     assert(dict == NULL);
     return dict;
 }
-

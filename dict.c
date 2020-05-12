@@ -8,10 +8,10 @@ struct _node_t {
     key_t key;
     value_t value;
 };
-
 dict_t dict_empty() {
-    dict_t dict = NULL;
-    /* needs implementation */
+    dict_t dict = malloc(sizeof(struct _node_t));
+    dict ->key = NULL;
+    dict -> value = NULL;
     assert(dict != NULL && dict_length(dict) == 0);
     return dict;
 }
@@ -26,7 +26,7 @@ dict_t dict_add(dict_t dict, key_t word, value_t def) {
 value_t dict_search(dict_t dict, key_t word) {
     key_t def=NULL;
     assert(dict != NULL && word != NULL);
-    /* needs implementation */
+    
     assert((def==NULL && !dict_exists(dict, word)) || def != NULL);
     return NULL;
 }

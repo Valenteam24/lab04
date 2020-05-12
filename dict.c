@@ -81,14 +81,20 @@ unsigned int dict_length(dict_t dict) {
 
 dict_t dict_remove(dict_t dict, key_t word) {
     assert(dict != NULL && word != NULL);
-    /* needs implementation */
     assert(dict != NULL && !dict_exists(dict, word));
     return dict;
 }
 
 dict_t dict_remove_all(dict_t dict) {
     assert(dict != NULL);
-    /* needs implementation */
+    if ((dict->left->key==NULL)&&(dict->right->key==NULL))
+    {
+        dict=dict_remove(dict,dict->key);
+    }
+    else{
+        dict=dict_remove_all(dict->left);
+        dict=dict_remove_all(dict->right);
+    }
     assert(dict != NULL && dict_length(dict) == 0);
     return dict;
 }

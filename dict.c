@@ -19,7 +19,22 @@ dict_t dict_empty() {
 
 dict_t dict_add(dict_t dict, key_t word, value_t def) {
     assert(dict != NULL && word != NULL && def != NULL);
-    /* needs implementation */
+    if ((key_eq(dict->key,word))||(!(dict_exists(dict,word))))
+    {
+        dict->value=def;
+        dict->key=word;
+    }
+    else
+    {
+        if (key_less(dict->key,word))
+        {
+            dict=dict_add(dict->left,word,def);
+        }
+        else
+        {
+            dict=dict_add(dict->right,word,def);
+        }   
+    }
     assert(value_eq(def, dict_search(dict, word)));
     return dict;
 }

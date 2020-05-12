@@ -26,9 +26,11 @@ dict_t dict_add(dict_t dict, key_t word, value_t def) {
 value_t dict_search(dict_t dict, key_t word) {
     key_t def=NULL;
     assert(dict != NULL && word != NULL);
+    
     if (strless(dict->key,word)) {
         def = dict_search(dict->left,word);
     }
+    
     else {
         def = dict_search(dict->right,word);
     }
@@ -39,8 +41,24 @@ value_t dict_search(dict_t dict, key_t word) {
 
 bool dict_exists(dict_t dict, key_t word) {
     assert(dict != NULL && word != NULL);
-    /* needs implementation */
-    return false;
+    bool res = false;
+    
+    if (string_eq(dict->key,word)) {
+        res = true;
+    }
+
+    else{
+
+        if(string_less(dict->key,word)){
+            res = dict_exists(dict->left,word);
+        }
+
+        else {
+            res = dict_exists(dict->left,word);
+        }
+    }
+    
+    return res;
 }
 
 unsigned int dict_length(dict_t dict) {

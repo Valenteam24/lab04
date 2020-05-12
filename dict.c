@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stdlib.h>
 #include "dict.h"
 #include "key_value.h"
 
@@ -26,21 +27,56 @@ dict_t dict_add(dict_t dict, key_t word, value_t def) {
 value_t dict_search(dict_t dict, key_t word) {
     key_t def=NULL;
     assert(dict != NULL && word != NULL);
-    
+    if (string_eq(dict->key,word)){
+        def = dict->value;
+    }else
+    {
+        if (string_less(dict->key,word))
+        {
+            def = dict_search(dict->left,word);
+        } else if(string_less(word,dict->key))
+        {
+            def = dict_search(dict->right,word);
+        }
+        
+        
+    }
     assert((def==NULL && !dict_exists(dict, word)) || def != NULL);
-    return NULL;
+    return def;
 }
 
 bool dict_exists(dict_t dict, key_t word) {
     assert(dict != NULL && word != NULL);
-    /* needs implementation */
-    return false;
+    bool exists = false;
+    if(string_eq(dict->key,word)){
+        exists = true;
+    }
+    else{
+        if (string_less(dict->key,word))
+        {
+            exists = dict_exists(dict->left, word);
+        }
+        else if (string_less(word,dict->key))
+        {
+            exists = dict_exists(dict->right, word);
+        }
+        
+        
+    }
+    return exists;
 }
 
 unsigned int dict_length(dict_t dict) {
     assert(dict != NULL);
-    /* needs implementation */
-    return 0u;
+    unsigned int length = 0u;
+    if ((dict->left->key==NULL)||(dict->right->key==NULL))
+    {
+        length++;
+    }
+    else{
+        length += (dict_length(dict->left)+dict_length(dict->right));
+    }
+    return length;
 }
 
 dict_t dict_remove(dict_t dict, key_t word) {

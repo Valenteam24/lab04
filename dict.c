@@ -24,6 +24,7 @@ dict_t dict_add(dict_t dict, key_t word, value_t def) {
 }
 
 value_t dict_search(dict_t dict, key_t word) {
+
     key_t def=NULL;
     assert(dict != NULL && word != NULL);
     
@@ -36,10 +37,12 @@ value_t dict_search(dict_t dict, key_t word) {
     }
     
     assert((def==NULL && !dict_exists(dict, word)) || def != NULL);
-    return NULL;
+
+    return def;
 }
 
 bool dict_exists(dict_t dict, key_t word) {
+
     assert(dict != NULL && word != NULL);
     bool res = false;
     
@@ -57,14 +60,28 @@ bool dict_exists(dict_t dict, key_t word) {
             res = dict_exists(dict->left,word);
         }
     }
-    
+
     return res;
 }
 
 unsigned int dict_length(dict_t dict) {
+    
     assert(dict != NULL);
-    /* needs implementation */
-    return 0u;
+
+    unsigned int count = 1;
+
+    if(dict->key != NULL){
+
+        if (dict->left != NULL){
+            count += dict_length(dict->left);
+        }
+        
+        if (dict->right != NULL){
+            count += dict_length(dict->right);
+        }
+    }
+
+    return count;
 }
 
 dict_t dict_remove(dict_t dict, key_t word) {

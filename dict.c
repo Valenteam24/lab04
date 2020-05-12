@@ -12,6 +12,8 @@ struct _node_t {
 dict_t dict_empty() {
     dict_t dict = NULL;
     dict = (dict_t)malloc(sizeof(struct _node_t));
+    dict->key = NULL;
+    dict->value = NULL;
     assert(dict != NULL && dict_length(dict) == 0);
     return dict;
 }
@@ -65,7 +67,7 @@ bool dict_exists(dict_t dict, key_t word) {
 }
 
 unsigned int dict_length(dict_t dict) {
-    
+
     assert(dict != NULL);
 
     unsigned int count = 1;

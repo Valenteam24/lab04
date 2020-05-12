@@ -35,8 +35,9 @@ dict_t dict_add(dict_t dict, key_t word, value_t def) {
     {
         dict->key=word;
         dict->value=def;
+        dict->left=dict_empty();
+        dict->right=dict_empty();
     }
-    
     assert(value_eq(def, dict_search(dict, word)));
     return dict;
 }

@@ -12,6 +12,7 @@ struct _node_t {
 dict_t dict_empty() {
     dict_t dict = NULL;
     dict = (dict_t)malloc(sizeof(struct _node_t));
+    dict->key = dict->value = NULL;
     assert(dict != NULL && dict_length(dict) == 0);
     return dict;
 }
@@ -30,32 +31,46 @@ value_t dict_search(dict_t dict, key_t word) {
         def = dict->value;
     }else
     {
-        if (dict->key < word)
-        {
+        if (string_less(dict->key,word)){
+
             def = dict_search(dict->left,word);
-        } else if(dict->key > word)
-        {
+
+        } else if(string_less(word,dict->key)){
+
             def = dict_search(dict->right,word);
         }
-        
-        
     }
-    
-    
     assert((def==NULL && !dict_exists(dict, word)) || def != NULL);
-    return NULL;
+    return def;
 }
 
 bool dict_exists(dict_t dict, key_t word) {
     assert(dict != NULL && word != NULL);
-    /* needs implementation */
-    return false;
+    bool exists = false;
+    if (dict->key == word){
+        exists = true;
+    }else {
+        if (string_less(dict->key,word)){
+            exists = dict_search(dict->left,word);
+        } else if (string_less(word,dict->key)){
+            exists = dict_search(word,dict->right);
+        }  
+    }
+    return exists;
 }
 
 unsigned int dict_length(dict_t dict) {
     assert(dict != NULL);
-    /* needs implementation */
-    return 0u;
+    if(!(dict->key == NULL)){
+        unsigned int count = 1;
+        if (dict->left != NULL) {
+        count += dict_length(dict->left);
+        }
+        if (dict->right != NULL) {
+            count += dict_length(dict->right);
+        }
+        return count;
+    }
 }
 
 dict_t dict_remove(dict_t dict, key_t word) {
@@ -74,7 +89,11 @@ dict_t dict_remove_all(dict_t dict) {
 
 void dict_dump(dict_t dict, FILE *file) {
     assert(dict != NULL && file != NULL);
-    /* needs implementation */
+    dict = dict_from_file(file);
+
+    string_dump(dict->key,file);
+    dict_dump(dict->left,file);
+    dict_dump(dict->right,file);
     assert(dict != NULL);
 }
 

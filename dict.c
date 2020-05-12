@@ -77,35 +77,41 @@ unsigned int dict_length(dict_t dict) {
 dict_t dict_remove(dict_t dict, key_t word) {
     assert(dict != NULL && word != NULL);
     if (string_less(dict->key,word)){
+
         dict->key = dict_remove(dict->left,word);
+
     } else if (string_less(word,dict->right)){
+
         dict->key = dict_remove(dict->right,word);
-    } else if(string_eq(dict->key,word)){
+
+    } else if(string_eq(dict->key,word)){ //capaz se puede poner solo else
+
         if ((dict->left->key==NULL)&&(dict->left->value==NULL)){
-            dict_t daux = dict_copy(dict);
-            daux = dict->right;
+            dict_t daux = dict->right;
             free(dict);
+            dict = daux; //lo mesmo que abajo
+
         }else if((dict->right->key==NULL)&&(dict->right->value==NULL)){
-            dict_t daux = dict_copy(dict);
-            daux = dict->left;
+            dict_t daux = dict->left;
             free(dict);
+            dict = daux; //no se si es asi, deberia ser un return daux
         }
-        dict_t daux = dict_copy(dict);
-        daux = dict_min_node(dict->right);
-        dict->key = daux ->key;
+        dict_t daux = dict_min_node(dict->right);
+        dict->key = daux->key;
         dict->right = dict_remove(dict->right,daux->key);
     }
     assert(dict != NULL && !dict_exists(dict, word));
     return dict;
 } // no preguntes está horrible tengo miedo :(
 
-static key_t dict_min_node(dict_t dict){
-    key_t min;
+static dict_t dict_min_node(dict_t dict){
+    dict_t min;
     if(dict->right->key!=NULL){
     min = disc_min_node(dict->right);
     }
     else{
-    min = dict->key;
+    min->key = dict->key;
+    min->value = dict->value;
     }
     return min;
 }

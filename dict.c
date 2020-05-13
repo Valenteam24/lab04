@@ -82,8 +82,8 @@ bool dict_exists(dict_t dict, key_t word) {
 unsigned int dict_length(dict_t dict) {
     assert(dict != NULL);
     unsigned int length = 0u;
-    if(!(dict->key == NULL)){
-        length++;
+    if(dict->key != NULL){
+        length = 1;
         if (dict->left != NULL) {
         length += dict_length(dict->left);
         }

@@ -21,6 +21,7 @@ dict_t dict_empty() {
 dict_t dict_add(dict_t dict, key_t word, value_t def) {
     assert(dict != NULL && word != NULL && def != NULL);
     if (key_eq(dict->key,word)){
+        dict->value = value_destroy(dict->value);
         dict->value=def;
     }
     else if (key_less(dict->key,word)){
@@ -48,11 +49,11 @@ value_t dict_search(dict_t dict, key_t word) {
         def = dict->value;
     }else
     {
-        if (string_less(dict->key,word)){
+        if (key_less(dict->key,word)){
 
             def = dict_search(dict->left,word);
 
-        } else if(string_less(word,dict->key)){
+        } else if(key_less(word,dict->key)){
 
             def = dict_search(dict->right,word);
         }
@@ -67,9 +68,9 @@ bool dict_exists(dict_t dict, key_t word) {
     if (dict->key == word){
         exists = true;
     }else {
-        if (string_less(dict->key,word)){
+        if (key_less(dict->key,word)){
             exists = dict_search(dict->left,word);
-        } else if (string_less(word,dict->key)){
+        } else if (key_less(word,dict->key)){
             exists = dict_search(word,dict->right);
         }  
     }
@@ -79,14 +80,14 @@ bool dict_exists(dict_t dict, key_t word) {
 unsigned int dict_length(dict_t dict) {
     assert(dict != NULL);
     if(!(dict->key == NULL)){
-        unsigned int count = 1;
+        unsigned int length = 1;
         if (dict->left != NULL) {
-        count += dict_length(dict->left);
+        length += dict_length(dict->left);
         }
         if (dict->right != NULL) {
-            count += dict_length(dict->right);
+            length += dict_length(dict->right);
         }
-        return count;
+        return length;
     }
 }
 
@@ -128,13 +129,13 @@ dict_t dict_remove(dict_t dict, key_t word) {
 static dict_t dict_min_node(dict_t dict){
     dict_t min;
     if(dict->right->key!=NULL){
-    min = disc_min_node(dict->right);
+        min = disc_min_node(dict->right);
     }
     else{
-    min->key = dict->key;
-    min->value = dict->value;
+        min->key = dict->key;
+        min->value = dict->value;
     }
-    return min;
+    return min; //deberia retornar un nodo pero idk
 }
 
 dict_t dict_remove_all(dict_t dict) {

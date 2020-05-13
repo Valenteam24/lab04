@@ -16,15 +16,33 @@ dict_t dict_empty() {
     dict = (dict_t)malloc(sizeof(struct _node_t));
     dict->key = NULL;
     dict->value = NULL;
-    assert(dict != NULL && dict_length(dict) == 0);
+    assert(dict_length(dict) == 0);
     return dict;
 }
 
 //To do
 dict_t dict_add(dict_t dict, key_t word, value_t def) {
-    assert(dict != NULL && word != NULL && def != NULL);
-    /* needs implementation */
-    assert(value_eq(def, dict_search(dict, word)));
+    assert(word != NULL && def != NULL);
+    
+    if ((dict->key == NULL) && (dict->value == NULL)){
+        dict->key = word;
+        dict->value=def;
+        dict->left = dict_empty();
+        dict->right = dict_empty();
+    }
+    else if (key_less(dict->key,word)){
+        dict = dict_add(dict->right,word,def);
+    }
+    else if(key_less(word,dict->key)){
+        dict = dict_add(dict->left,word,def);
+    }   
+    else{ 
+        /*if the key entered is not minor, is not greater
+        and is not null, then it is equal*/
+        value_destroy(dict->value);
+        dict->value=def;
+    }
+    assert(dict != NULL && value_eq(def, dict_search(dict, word)));
     return dict;
 }
 
@@ -118,8 +136,8 @@ dict_t dict_remove(dict_t dict, key_t word) {
         //If word not greater or lesser, then it's equal
         //Case 1: Node to be deleted is leaf (has no child)
         if (dict->left == NULL && dict->right == NULL){
-            dict->key = key_destroy(dict->key);
-            dict->value = value_destroy(dict->value);
+            key_destroy(dict->key);
+            value_destroy(dict->value);
             free(dict);
             dict = NULL;
         }
@@ -127,18 +145,18 @@ dict_t dict_remove(dict_t dict, key_t word) {
         else if (dict->left == NULL){
             dict_t temp = dict;
             dict = dict->right;
-            temp->key = key_destroy(temp->key);
-            temp->value = value_destroy(temp->value);
+            key_destroy(temp->key);
+            value_destroy(temp->value);
             free(temp);
-            //temp = NULL;
+            
         }
         else if (dict->right == NULL){
             dict_t temp = dict;
             dict = dict->left;
-            temp->key = key_destroy(temp->key);
-            temp->value = value_destroy(temp->value);
+            key_destroy(temp->key);
+            value_destroy(temp->value);
             free(temp);
-            //temp = NULL;
+            
         }
         //Case 3: Node to be deleted has 2 children
         else{
@@ -149,7 +167,7 @@ dict_t dict_remove(dict_t dict, key_t word) {
         }
         
     }
-    assert(dict != NULL && !dict_exists(dict, word));
+    assert(!dict_exists(dict, word));
     return dict;
 }
 
@@ -175,11 +193,15 @@ dict_t dict_remove_all(dict_t dict) {
 void dict_dump(dict_t dict, FILE *file) {
     assert(dict != NULL && file != NULL);
 
-    dict = dict_from_file(file);
-    string_dump(dict->key,file);
-    dict_dump(dict->left,file);
-    dict_dump(dict->right,file);
-
+    if (dict->key != NULL) {
+        fprintf(file, "(");
+        key_dump(dict->key, file);
+        fprintf(file, ",");
+        value_dump(dict->value, file);
+        fprintf(file, ")\n");
+        dict_dump(dict->left, file);
+        dict_dump(dict->right, file);
+    }
     assert(dict != NULL);
 }
 

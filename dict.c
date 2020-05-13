@@ -15,16 +15,18 @@ dict_t dict_empty() {
     dict_t dict = NULL;
     dict = (dict_t)malloc(sizeof(struct _node_t));
     dict->key = dict->value = NULL;
-    assert(dict != NULL && dict_length(dict) == 0);
 
+    assert(dict != NULL && dict_length(dict) == 0);
     return dict;
 }
 
 dict_t dict_add(dict_t dict, key_t word, value_t def) {
     assert(dict != NULL && word != NULL && def != NULL);
-    if (key_eq(dict->key,word)){
-        dict->value = value_destroy(dict->value);
+    if ((dict->key==NULL) && (dict->value==NULL)){
+        dict->key=word;
         dict->value=def;
+        dict->left=dict_empty();
+        dict->right=dict_empty();
     }
     else if (key_less(dict->key,word)){
         dict=dict_add(dict->left,word,def);
@@ -34,11 +36,9 @@ dict_t dict_add(dict_t dict, key_t word, value_t def) {
     }   
     else{ 
         /*if the key entered is not minor, is not greater
-        and is not equal, then it is null (and value too)*/
-        dict->key=word;
+        and is not null, then it is equal*/
+        dict->value = value_destroy(dict->value);
         dict->value=def;
-        dict->left=dict_empty();
-        dict->right=dict_empty();
     }
     assert(value_eq(def, dict_search(dict, word)));
     return dict;
@@ -52,11 +52,9 @@ value_t dict_search(dict_t dict, key_t word) {
     }else
     {
         if (key_less(dict->key,word)){
-
             def = dict_search(dict->left,word);
-
+            
         } else if(key_less(dict->key,word)){
-
             def = dict_search(dict->right,word);
         }
     }
@@ -105,23 +103,34 @@ dict_t dict_remove(dict_t dict, key_t word) {
         dict = dict_remove(dict->right,word);
 
     } else {
-
-        if ((dict->left->key==NULL)&&(dict->left->value==NULL)){
-            dict_t daux = dict->right;
+        // no children
+        if ((dict->left==NULL)&&(dict->right==NULL)){
             key_destroy(dict->key);
             value_destroy(dict->value);
             free(dict);
-            dict = daux; //???
-
-        }else if((dict->right->key==NULL)&&(dict->right->value==NULL)){
-            dict_t daux = dict->left;
-            key_destroy(dict->key);
-            value_destroy(dict->value);
-            free(dict);
-            dict = daux; //????
-        } else {
+            dict = NULL;
+        }
+        // one right child 
+          else if ((dict->left->key==NULL)&&(dict->left->value==NULL)){
+            dict_t daux = dict;
+            dict = dict->right;
+            key_destroy(daux->key);
+            value_destroy(daux->value);
+            free(daux);
+        } 
+        // one left child
+          else if((dict->right->key==NULL)&&(dict->right->value==NULL)){
+            dict_t daux = dict;
+            dict = dict->left;
+            key_destroy(daux->key);
+            value_destroy(daux->value);
+            free(daux);
+        }
+        // two children
+          else {
             dict_t daux = dict_min_node(dict->right);
             dict->key = daux->key;
+            dict->value = daux->value;
             dict->right = dict_remove(dict->right,daux->key);
         }
     }
@@ -131,14 +140,14 @@ dict_t dict_remove(dict_t dict, key_t word) {
 
 dict_t dict_min_node(dict_t dict){
     dict_t min = dict_empty();
-    if(dict->right->key!=NULL){
-        min = dict_min_node(dict->right);
+    if(dict->left->key!=NULL){
+        min = dict_min_node(dict->left);
     }
     else{
         min->key = dict->key;
         min->value = dict->value;
     }
-    return min; //deberia retornar un nodo pero idk
+    return min;
 }
 
 dict_t dict_remove_all(dict_t dict) {

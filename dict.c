@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include "dict.h"
 #include "key_value.h"
-
 struct _node_t {
     dict_t left;
     dict_t right;
@@ -102,11 +101,11 @@ dict_t dict_remove(dict_t dict, key_t word) {
     assert(dict != NULL && word != NULL);
     if (string_less(dict->key,word)){
 
-        dict->key = dict_remove(dict->left,word);
+        dict = dict_remove(dict->left,word);
 
-    } else if (string_less(word,dict->right)){
+    } else if (string_less(word,dict->key)){
 
-        dict->key = dict_remove(dict->right,word);
+        dict = dict_remove(dict->right,word);
 
     } else{
 
@@ -134,9 +133,9 @@ dict_t dict_remove(dict_t dict, key_t word) {
     return dict;
 } // no preguntes está horrible tengo miedo :(
 dict_t dict_min_node(dict_t dict){
-    dict_t min;
+    dict_t min=dict_empty();
     if(dict->right->key!=NULL){
-    min = disc_min_node(dict->right);
+    min = dict_min_node(dict->right);
     }
     else{
     min->key = dict->key;
@@ -159,11 +158,6 @@ dict_t dict_remove_all(dict_t dict) {
 }
 void dict_dump(dict_t dict, FILE *file) {
     assert(dict != NULL && file != NULL);
-    dict = dict_from_file(file);
-    string_dump(dict->key,file);
-    string_dump(dict->value,file);
-    dict_dump(dict->left,file);
-    dict_dump(dict->right,file);
     assert(dict != NULL);
 }
 

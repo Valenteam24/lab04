@@ -154,13 +154,17 @@ dict_t dict_remove_all(dict_t dict) {
     return dict;
 }
 
-void dict_dump(dict_t dict, FILE *file) { //MORIRSE
+void dict_dump(dict_t dict, FILE *file) {
     assert(dict != NULL && file != NULL);
-
-    //dict_to_file(dict->key,file);
-    //dict_to_file(dict->value,file);
-    dict_dump(dict->left,file);
-    dict_dump(dict->right,file);
+    if (dict->key != NULL) {
+        fprintf(file, "(");
+        key_dump(dict->key, file);
+        fprintf(file, ",");
+        value_dump(dict->value, file);
+        fprintf(file, ")\n");
+        dict_dump(dict->left, file);
+        dict_dump(dict->right, file);
+    }
     assert(dict != NULL);
 }
 

@@ -1,3 +1,6 @@
+#ifndef KEY_VALUE_H
+#define KEY_VALUE_H
+
 #include <stdbool.h>
 #include <stdio.h>
 #include "string.h"
@@ -15,3 +18,4 @@ typedef string_t value_t;
 #define value_destroy string_destroy
 #define value_dump string_dump
 
+#endif

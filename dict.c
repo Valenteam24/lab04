@@ -1,6 +1,8 @@
 #include <assert.h>
 #include "dict.h"
 #include "key_value.h"
+#include <stdlib.h>
+#include <stdbool.h>
 
 struct _node_t {
     dict_t left;
@@ -43,7 +45,7 @@ dict_t dict_add(dict_t dict, key_t word, value_t def) {
 }
 
 value_t dict_search(dict_t dict, key_t word) {
-    key_t def=NULL;
+    value_t def=NULL; 
     assert(dict != NULL && word != NULL);
     if (dict->key == word){
         def = dict->value;
@@ -53,7 +55,7 @@ value_t dict_search(dict_t dict, key_t word) {
 
             def = dict_search(dict->left,word);
 
-        } else if(key_less(word,dict->key)){
+        } else if(key_less(dict->key,word)){
 
             def = dict_search(dict->right,word);
         }
@@ -71,7 +73,7 @@ bool dict_exists(dict_t dict, key_t word) {
         if (key_less(dict->key,word)){
             exists = dict_search(dict->left,word);
         } else if (key_less(word,dict->key)){
-            exists = dict_search(word,dict->right);
+            exists = dict_search(dict->right,word);
         }  
     }
     return exists;
@@ -79,16 +81,17 @@ bool dict_exists(dict_t dict, key_t word) {
 
 unsigned int dict_length(dict_t dict) {
     assert(dict != NULL);
+    unsigned int length = 0u;
     if(!(dict->key == NULL)){
-        unsigned int length = 1;
+        length++;
         if (dict->left != NULL) {
         length += dict_length(dict->left);
         }
         if (dict->right != NULL) {
             length += dict_length(dict->right);
         }
-        return length;
     }
+    return length;
 }
 
 dict_t dict_remove(dict_t dict, key_t word) {
@@ -97,7 +100,7 @@ dict_t dict_remove(dict_t dict, key_t word) {
 
         dict->key = dict_remove(dict->left,word);
 
-    } else if (key_less(word,dict->right)){
+    }else if(key_less(word,dict->key)){
 
         dict->key = dict_remove(dict->right,word);
 
@@ -129,7 +132,7 @@ dict_t dict_remove(dict_t dict, key_t word) {
 static dict_t dict_min_node(dict_t dict){
     dict_t min;
     if(dict->right->key!=NULL){
-        min = disc_min_node(dict->right);
+        min = dict_min_node(dict->right);
     }
     else{
         min->key = dict->key;
@@ -154,8 +157,8 @@ dict_t dict_remove_all(dict_t dict) {
 void dict_dump(dict_t dict, FILE *file) { //MORIRSE
     assert(dict != NULL && file != NULL);
 
-    dict_to_file(dict->key,file);
-    dict_to_file(dict->value,file);
+    //dict_to_file(dict->key,file);
+    //dict_to_file(dict->value,file);
     dict_dump(dict->left,file);
     dict_dump(dict->right,file);
     assert(dict != NULL);

@@ -98,11 +98,11 @@ dict_t dict_remove(dict_t dict, key_t word) {
     assert(dict != NULL && word != NULL);
     if (key_less(dict->key,word)){
 
-        dict->key = dict_remove(dict->left,word);
+        dict = dict_remove(dict->left,word);
 
     }else if(key_less(word,dict->key)){
 
-        dict->key = dict_remove(dict->right,word);
+        dict = dict_remove(dict->right,word);
 
     } else {
 
@@ -111,14 +111,14 @@ dict_t dict_remove(dict_t dict, key_t word) {
             key_destroy(dict->key);
             value_destroy(dict->value);
             free(dict);
-            dict = daux; //lo mesmo que abajo
+            dict = daux; //???
 
         }else if((dict->right->key==NULL)&&(dict->right->value==NULL)){
             dict_t daux = dict->left;
             key_destroy(dict->key);
             value_destroy(dict->value);
             free(dict);
-            dict = daux; //no se si es asi, deberia ser un return daux
+            dict = daux; //????
         } else {
             dict_t daux = dict_min_node(dict->right);
             dict->key = daux->key;
@@ -127,10 +127,10 @@ dict_t dict_remove(dict_t dict, key_t word) {
     }
     assert(dict != NULL && !dict_exists(dict, word));
     return dict;
-} // no preguntes está horrible tengo miedo :(
+} 
 
-static dict_t dict_min_node(dict_t dict){
-    dict_t min;
+dict_t dict_min_node(dict_t dict){
+    dict_t min = dict_empty();
     if(dict->right->key!=NULL){
         min = dict_min_node(dict->right);
     }

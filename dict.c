@@ -1,7 +1,9 @@
 #include <assert.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "dict.h"
 #include "key_value.h"
+
 struct _node_t {
     dict_t left;
     dict_t right;
@@ -42,16 +44,16 @@ dict_t dict_add(dict_t dict, key_t word, value_t def) {
 }
 
 value_t dict_search(dict_t dict, key_t word) {
-    key_t def=NULL;
+    value_t def=NULL;
     assert(dict != NULL && word != NULL);
-    if (string_eq(dict->key,word)){
+    if (key_eq(dict->key,word)){
         def = dict->value;
     }else
     {
-        if (string_less(dict->key,word))
+        if (key_less(dict->key,word))
         {
             def = dict_search(dict->left,word);
-        } else if(string_less(word,dict->key))
+        } else if(key_less(word,dict->key))
         {
             def = dict_search(dict->right,word);
         }
@@ -65,15 +67,15 @@ value_t dict_search(dict_t dict, key_t word) {
 bool dict_exists(dict_t dict, key_t word) {
     assert(dict != NULL && word != NULL);
     bool exists = false;
-    if(string_eq(dict->key,word)){
+    if(key_eq(dict->key,word)){
         exists = true;
     }
     else{
-        if (string_less(dict->key,word))
+        if (key_less(dict->key,word))
         {
             exists = dict_exists(dict->left, word);
         }
-        else if (string_less(word,dict->key))
+        else if (key_less(word,dict->key))
         {
             exists = dict_exists(dict->right, word);
         }
@@ -99,11 +101,11 @@ unsigned int dict_length(dict_t dict) {
 
 dict_t dict_remove(dict_t dict, key_t word) {
     assert(dict != NULL && word != NULL);
-    if (string_less(dict->key,word)){
+    if (key_less(dict->key,word)){
 
         dict = dict_remove(dict->left,word);
 
-    } else if (string_less(word,dict->key)){
+    } else if (key_less(word,dict->key)){
 
         dict = dict_remove(dict->right,word);
 
@@ -111,15 +113,15 @@ dict_t dict_remove(dict_t dict, key_t word) {
 
         if (dict->left->key==NULL){
             dict_t daux = dict->right;
-            string_destroy(dict->key);
-            string_destroy(dict->value);
+            key_destroy(dict->key);
+            value_destroy(dict->value);
             free(dict);
             dict = daux;
 
         }else if(dict->right->key==NULL){
             dict_t daux = dict->left;
-            string_destroy(dict->key);
-            string_destroy(dict->value);
+            key_destroy(dict->key);
+            value_destroy(dict->value);
             free(dict);
             dict = daux; //no se si es asi, deberia ser un return daux
         }
@@ -158,12 +160,21 @@ dict_t dict_remove_all(dict_t dict) {
 }
 void dict_dump(dict_t dict, FILE *file) {
     assert(dict != NULL && file != NULL);
+    if (dict->key != NULL) {
+        fprintf(file, "(");
+        key_dump(dict->key, file);
+        fprintf(file, ",");
+        value_dump(dict->value, file);
+        fprintf(file, ")\n");
+        dict_dump(dict->left, file);
+        dict_dump(dict->right, file);
+    }
     assert(dict != NULL);
 }
 
 dict_t dict_destroy(dict_t dict) {
     assert(dict != NULL);
-    dict=dict_remove_all;
+    dict=dict_remove_all(dict);
     free(dict);
     assert(dict == NULL);
     return dict;

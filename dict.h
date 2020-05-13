@@ -79,7 +79,7 @@ dict_t dict_remove(dict_t dict, key_t word);
  *
  */
 
-dict_t dict_min_node(dict_t dict);
+// dict_t dict_min_node(dict_t dict);
 /* Returns the minimum node of the right sub-tree.
  * 
  * PRE: {dict --> dict}

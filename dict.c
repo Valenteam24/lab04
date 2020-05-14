@@ -50,7 +50,7 @@ value_t dict_search(dict_t dict, key_t word) {
             def = dict->value;
         }else if (key_less(word,dict->key)){
             def = dict_search(dict->left,word);
-        } else { //key_less(dict->key,word)
+        } else { 
             def = dict_search(dict->right,word);
             }
         } 
@@ -168,6 +168,8 @@ dict_t dict_destroy(dict_t dict) {
     if (dict !=NULL){
         dict->left=dict_destroy(dict->left);
         dict->right=dict_destroy(dict->right);
+        dict->key=string_destroy(dict->key);
+        dict->value=string_destroy(dict->value);
         free(dict);
     }
     return NULL;

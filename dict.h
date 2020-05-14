@@ -79,17 +79,6 @@ dict_t dict_remove(dict_t dict, key_t word);
  *
  */
 
-// dict_t dict_min_node(dict_t dict);
-/* Returns the minimum node of the right sub-tree.
- * 
- * PRE: {dict --> dict}
- * 
- *  dict = dict_min_node(dict)
- * 
- * POS: {dict --> dict /\ dict_length(dict) == 1}
- * 
- */
-
 dict_t dict_remove_all(dict_t dict);
 /* Removes all the words from the dictionary.
  *

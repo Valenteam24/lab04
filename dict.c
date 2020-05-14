@@ -73,7 +73,7 @@ unsigned int dict_length(dict_t dict) {
     if(dict != NULL){
         length = 1;
         if (dict->left != NULL) {
-        length += dict_length(dict->left);
+            length += dict_length(dict->left);
         }
         if (dict->right != NULL) {
             length += dict_length(dict->right);

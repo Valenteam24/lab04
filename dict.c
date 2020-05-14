@@ -99,11 +99,11 @@ dict_t dict_remove(dict_t dict, key_t word) {
     //assert(dict != NULL && word != NULL);
     if (key_less(dict->key,word)){
 
-        dict = dict_remove(dict->left,word);
+        dict->right = dict_remove(dict->right,word);
 
     }else if(key_less(word,dict->key)){
 
-        dict = dict_remove(dict->right,word);
+        dict->left = dict_remove(dict->left,word);
 
     } else {
         // no children
@@ -114,7 +114,7 @@ dict_t dict_remove(dict_t dict, key_t word) {
             dict = NULL;
         }
         // one right child 
-          else if ((dict->left->key==NULL)&&(dict->left->value==NULL)){
+          else if (dict->left==NULL){
             dict_t daux = dict;
             dict = dict->right;
             daux->key = key_destroy(daux->key);
@@ -122,7 +122,7 @@ dict_t dict_remove(dict_t dict, key_t word) {
             free(daux);
         } 
         // one left child
-          else if((dict->right->key==NULL)&&(dict->right->value==NULL)){
+          else if(dict->right==NULL){
             dict_t daux = dict;
             dict = dict->left;
             daux->key = key_destroy(daux->key);

@@ -171,7 +171,7 @@ int main(void) {
     do {
         option = print_menu();
         switch (option) {
-            case ADD:
+            case ADD: // anda 1 caso
             current = on_add(current);
                 break;
             case REMOVE:
@@ -180,22 +180,22 @@ int main(void) {
             case REPLACE:
             current = on_replace(current);
                 break;
-            case DUMP:
+            case DUMP: //anda joya
             on_dump(current);
                 break;
-            case EMPTY:
+            case EMPTY: //y si, si es facil
             current = on_empty(current);
                 break;
-            case LOAD:
+            case LOAD: //SOBRE ESCRIBE
             current = on_load(current);
                 break;
-            case SEARCH:
+            case SEARCH: //hermoso
             on_search(current);    
                 break;
-            case SHOW:
+            case SHOW: //anda
             dict_dump(current, stdout); //valen dice que es asi
                 break;
-            case SIZE:
+            case SIZE: //anda uwu
             on_size(current);
                 break;
             case QUIT:

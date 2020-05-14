@@ -26,18 +26,18 @@ dict_t dict_add(dict_t dict, key_t word, value_t def) {
         dict = new_dict;
     }
     else {
-     if(key_less(dict->key,word)){
-        dict->right = dict_add(dict->right,word,def);
-    }
-    else if(key_less(word,dict->key)){
-        dict->left = dict_add(dict->left,word,def);
-    }   
-    else{ 
-        /*if the key entered is not minor, is not greater
-        and is not null, then it is equal*/
-        dict->value = value_destroy(dict->value);
-        dict->value=def;
-    }
+        if(key_less(dict->key,word)){
+            dict->right = dict_add(dict->right,word,def);
+        }
+        else if(key_less(word,dict->key)){
+            dict->left = dict_add(dict->left,word,def);
+        }   
+        else{ 
+            /*if the key entered is not minor, is not greater
+            and is not null, then it is equal*/
+            dict->value = value_destroy(dict->value);
+            dict->value=def;
+        }
     }
     assert(value_eq(def, dict_search(dict, word)));
     return dict;
@@ -98,7 +98,7 @@ static dict_t dict_min_node(dict_t dict){
     return min;
 }
 
-dict_t dict_remove(dict_t dict, key_t word) {
+dict_t dict_remove(dict_t dict, key_t word) { //no anda si la key es un negativo :(
     //assert(dict != NULL && word != NULL);
     if (key_less(word,dict->key)){
 
@@ -147,6 +147,8 @@ dict_t dict_remove(dict_t dict, key_t word) {
 
 dict_t dict_remove_all(dict_t dict) {
     if (dict !=NULL){
+        dict->key = key_destroy(dict->key);
+        dict->value = value_destroy(dict->value);
         dict->left = dict_remove_all(dict->left);
         dict->right = dict_remove_all(dict->right);
         free(dict);
@@ -169,6 +171,8 @@ void dict_dump(dict_t dict, FILE *file) {
 }
 dict_t dict_destroy(dict_t dict) {
     if (dict !=NULL){
+        dict->key = key_destroy(dict->key);
+        dict->value = value_destroy(dict->value);
         dict->left=dict_destroy(dict->left);
         dict->right=dict_destroy(dict->right);
         free(dict);

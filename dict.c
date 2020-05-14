@@ -85,7 +85,7 @@ unsigned int dict_length(dict_t dict) {
     return length;
 }
 
-// Returns the minimum node of the right sub-tree
+// Returns the minimum node of the right sub-trees
 static dict_t dict_min_node(dict_t dict){
     dict_t min = malloc(sizeof(struct _node_t));
     if(dict->left!=NULL){
@@ -93,20 +93,11 @@ static dict_t dict_min_node(dict_t dict){
     }
     else{
         min->key = key_clone(dict->key);
-        min->value = value_clone(dict->value);
+        min->value = value_clone(dict->value); //se reducen errores, pero faltan frees
     }
     return min;
 } 
-/*
-static dict_t dict_min_node(dict_t dict) 
-{ 
-    dict_t min = dict; 
-    while (min && min->left != NULL) 
-        min = min->left; 
 
-    return min; 
-}
- */
 
 dict_t dict_remove(dict_t dict, key_t word) {
     assert(word != NULL);
@@ -142,13 +133,14 @@ dict_t dict_remove(dict_t dict, key_t word) {
             daux->value = value_destroy(daux->value);
             free(daux);
         }
-        // two children  ACA HAY LEAKS en -1
+        // two children  ACA HAY LEAKS si compara nodos de negativos con positivos 
           else {
             dict_t daux = dict_min_node(dict->right);
             dict->key = daux->key;
             dict->value = daux->value;
             dict->right = dict_remove(dict->right,daux->key);
             free(daux);
+
         }
     }
     //assert(!dict_exists(dict, word));

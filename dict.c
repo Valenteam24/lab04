@@ -18,11 +18,12 @@ dict_t dict_empty() {
 dict_t dict_add(dict_t dict, key_t word, value_t def) {
     assert(word != NULL && def != NULL);
     if(dict==NULL){
-        dict = (dict_t)malloc(sizeof(struct _node_t));
+        dict_t new_dict = (dict_t)malloc(sizeof(struct _node_t));
         dict->key=word;
         dict->value=def;
         dict->left=dict_empty();
         dict->right=dict_empty();
+        dict = new_dict;
     }
     else if(key_less(dict->key,word)){
         dict = dict_add(dict->right,word,def);

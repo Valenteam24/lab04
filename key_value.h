@@ -17,5 +17,7 @@ typedef string_t value_t;
 #define key_dump string_dump
 #define value_destroy string_destroy
 #define value_dump string_dump
+#define key_clone string_clone
+#define value_clone string_clone
 
 #endif

@@ -88,12 +88,12 @@ unsigned int dict_length(dict_t dict) {
 // Returns the minimum node of the right sub-tree
 static dict_t dict_min_node(dict_t dict){
     dict_t min = malloc(sizeof(struct _node_t));
-    if(dict && dict->left!=NULL){
+    if(dict->left!=NULL){
         min = dict_min_node(dict->left);
     }
     else{
-        min->key = dict->key;
-        min->value = dict->value;
+        min->key = key_clone(dict->key);
+        min->value = value_clone(dict->value);
     }
     return min;
 } 
@@ -127,7 +127,7 @@ dict_t dict_remove(dict_t dict, key_t word) {
             dict = NULL;
         }
         // one right child 
-          else if ((dict->left==NULL)&&(dict->left==NULL)){
+          else if (dict->left==NULL){
             dict_t daux = dict;
             dict = dict->right;
             daux->key = key_destroy(daux->key);
@@ -135,21 +135,19 @@ dict_t dict_remove(dict_t dict, key_t word) {
             free(daux);
         } 
         // one left child
-          else if((dict->right==NULL)&&(dict->right==NULL)){
+          else if(dict->right==NULL){
             dict_t daux = dict;
             dict = dict->left;
             daux->key = key_destroy(daux->key);
             daux->value = value_destroy(daux->value);
             free(daux);
         }
-        // two children
+        // two children  ACA HAY LEAKS en -1
           else {
             dict_t daux = dict_min_node(dict->right);
             dict->key = daux->key;
             dict->value = daux->value;
             dict->right = dict_remove(dict->right,daux->key);
-            // daux->key = key_destroy(daux->key);
-            //daux->value = value_destroy(daux->value);
             free(daux);
         }
     }

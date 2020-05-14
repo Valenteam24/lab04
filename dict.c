@@ -18,7 +18,7 @@ dict_t dict_empty() {
 dict_t dict_add(dict_t dict, key_t word, value_t def) {
     assert(word != NULL && def != NULL);
     if(dict==NULL){
-        dict_t new_dict = malloc(sizeof(struct _node_t));
+        dict_t new_dict = (dict_t)malloc(sizeof(struct _node_t));
         new_dict->key=word;
         new_dict->value=def;
         new_dict->left=dict_empty();
@@ -85,10 +85,10 @@ unsigned int dict_length(dict_t dict) {
     return length;
 }
 
-// Returns the minimum node of the right sub-tree.
+// Returns the minimum node of the right sub-tree
 static dict_t dict_min_node(dict_t dict){
-    dict_t min = dict_empty();
-    if(dict->left->key!=NULL){
+    dict_t min = malloc(sizeof(struct _node_t));
+    if(dict && dict->left!=NULL){
         min = dict_min_node(dict->left);
     }
     else{
@@ -96,10 +96,20 @@ static dict_t dict_min_node(dict_t dict){
         min->value = dict->value;
     }
     return min;
-}
+} 
+/*
+static dict_t dict_min_node(dict_t dict) 
+{ 
+    dict_t min = dict; 
+    while (min && min->left != NULL) 
+        min = min->left; 
 
-dict_t dict_remove(dict_t dict, key_t word) { //no anda si la key es un negativo :(
-    //assert(dict != NULL && word != NULL);
+    return min; 
+}
+ */
+
+dict_t dict_remove(dict_t dict, key_t word) {
+    assert(word != NULL);
     if (key_less(word,dict->key)){
 
         dict->left = dict_remove(dict->left,word);
@@ -138,6 +148,9 @@ dict_t dict_remove(dict_t dict, key_t word) { //no anda si la key es un negativo
             dict->key = daux->key;
             dict->value = daux->value;
             dict->right = dict_remove(dict->right,daux->key);
+            // daux->key = key_destroy(daux->key);
+            //daux->value = value_destroy(daux->value);
+            free(daux);
         }
     }
     //assert(!dict_exists(dict, word));

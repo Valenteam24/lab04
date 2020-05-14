@@ -12,31 +12,24 @@ struct _node_t {
 };
 
 dict_t dict_empty() {
-    dict_t dict = NULL;
-    //dict = (dict_t)malloc(sizeof(struct _node_t));
-   // dict->key = dict->value = NULL;
-    // dict->left = dict->right = NULL;
-   // dict = NULL;
-
-
-    //assert((dict != NULL) && (dict_length(dict) == 0));
-    return dict;
+        return NULL;
 }
 
 dict_t dict_add(dict_t dict, key_t word, value_t def) {
     assert(word != NULL && def != NULL);
     if(dict==NULL){
-        dict = (dict_t)malloc(sizeof(struct _node_t));
-        dict->key=word;
-        dict->value=def;
-        dict->left=dict_empty();
-        dict->right=dict_empty();
+        dict_t new_dict = malloc(sizeof(struct _node_t));
+        new_dict->key=word;
+        new_dict->value=def;
+        new_dict->left=dict_empty();
+        new_dict->right=dict_empty();
+        dict = new_dict;
     }
     else if(key_less(dict->key,word)){
-        dict = dict_add(dict->right,word,def);
+        dict->right = dict_add(dict->right,word,def);
     }
     else if(key_less(word,dict->key)){
-        dict = dict_add(dict->left,word,def);
+        dict->left = dict_add(dict->left,word,def);
     }   
     else{ 
         /*if the key entered is not minor, is not greater
@@ -49,22 +42,19 @@ dict_t dict_add(dict_t dict, key_t word, value_t def) {
 }
 
 value_t dict_search(dict_t dict, key_t word) {
-    value_t def=NULL; 
     assert(word != NULL);
-    if (dict !=NULL){
-        if (dict->key == word){
+    value_t def = NULL; 
+   
+    if (dict !=NULL ){ 
+        if (key_eq(dict->key,word)){
             def = dict->value;
-        }else
-        {
-            if (key_less(dict->key,word)){
-                def = dict_search(dict->left,word);
-                
-            } else if(key_less(dict->key,word)){
-                def = dict_search(dict->right,word);
+        }else if (key_less(word,dict->key)){
+            def = dict_search(dict->left,word);
+        } else { //key_less(dict->key,word)
+            def = dict_search(dict->right,word);
             }
-        }
-    }
-   // assert((def !=NULL && !dict_exists(dict, word)) || def != NULL);
+        } 
+       // assert((def !=NULL && !dict_exists(dict, word)) || def != NULL);
     return def;
 }
 
@@ -72,15 +62,7 @@ bool dict_exists(dict_t dict, key_t word) {
     assert(word != NULL);
     bool exists = false;
     if (dict != NULL){
-        if (dict->key == word){
-        exists = true;
-        }else {
-            if (key_less(dict->key,word)){
-                exists = dict_search(dict->left,word);
-            } else if (key_less(word,dict->key)){
-                exists = dict_search(dict->right,word);
-            }  
-        }
+        exists = key_eq(dict->key,word) || dict_exists(dict->left,word) || dict_exists(dict->right,word);
     }
     return exists;
 }
@@ -161,15 +143,12 @@ dict_t dict_remove(dict_t dict, key_t word) {
 
 
 dict_t dict_remove_all(dict_t dict) {
-    assert(dict != NULL);
-    if ((dict->left==NULL)&&(dict->right==NULL)){
-        dict=dict_remove(dict,dict->key);
-    }
-    else{
+    if (dict !=NULL){
         dict=dict_remove_all(dict->left);
         dict=dict_remove_all(dict->right);
-    }
-    //assert(dict != NULL && dict_length(dict) == 0);
+        free(dict);
+        dict = NULL;
+    }  
     return dict;
 }
 
@@ -186,9 +165,11 @@ void dict_dump(dict_t dict, FILE *file) {
 }
 
 dict_t dict_destroy(dict_t dict) {
-    //assert(dict != NULL);
-    dict=dict_remove_all(dict);
-    free(dict);
+    if (dict !=NULL){
+        dict=dict_remove_all(dict->left);
+        dict=dict_remove_all(dict->right);
+        free(dict);
+    }
     assert(dict == NULL);
     return dict;
 }

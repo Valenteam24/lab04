@@ -144,8 +144,8 @@ dict_t dict_remove(dict_t dict, key_t word) {
 
 dict_t dict_remove_all(dict_t dict) {
     if (dict !=NULL){
-        dict=dict_remove_all(dict->left);
-        dict=dict_remove_all(dict->right);
+        dict->left=dict_remove_all(dict->left);
+        dict->right=dict_remove_all(dict->right);
         free(dict);
         dict = NULL;
     }  
@@ -166,10 +166,9 @@ void dict_dump(dict_t dict, FILE *file) {
 }
 dict_t dict_destroy(dict_t dict) {
     if (dict !=NULL){
-        dict=dict_remove_all(dict->left);
-        dict=dict_remove_all(dict->right);
+        dict->left=dict_destroy(dict->left);
+        dict->right=dict_destroy(dict->right);
         free(dict);
     }
-    assert(dict == NULL);
-    return dict;
+    return NULL;
 }

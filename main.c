@@ -82,12 +82,13 @@ dict_t on_add(dict_t current) {
     word = get_input("Please enter the word to add into the dict");
     if (dict_exists(current, word)) {
         printf(RESULT_PREFIX "The word is already in the dict.\n");
-        word = string_destroy(word);
     } else {
         definition = get_input("Please enter the definition");
         current = dict_add(current, word, definition);
         printf(RESULT_PREFIX "The word and definition were added.\n");
+        definition = string_destroy(definition);
     }
+    word = string_destroy(word);
     return (current);
 }
 

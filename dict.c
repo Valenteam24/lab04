@@ -19,23 +19,24 @@ dict_t dict_add(dict_t dict, key_t word, value_t def) {
     assert(word != NULL && def != NULL);
     if(dict==NULL){
         dict_t new_dict = (dict_t)malloc(sizeof(struct _node_t));
-        new_dict->key=word;
-        new_dict->value=def;
-        new_dict->left=dict_empty();
-        new_dict->right=dict_empty();
+        new_dict->key = word;
+        new_dict->value = def;
+        new_dict->left = dict_empty();
+        new_dict->right = dict_empty();
         dict = new_dict;
-    }
-    else if(key_less(dict->key,word)){
-        dict = dict_add(dict->right,word,def);
-    }
-    else if(key_less(word,dict->key)){
-        dict = dict_add(dict->left,word,def);
-    }   
-    else{ 
-        /*if the key entered is not minor, is not greater
-        and is not null, then it is equal*/
-        dict->value = value_destroy(dict->value);
-        dict->value=def;
+    } else {
+        if(key_less(dict->key,word)){
+            dict->left = dict_add(dict->right,word,def);
+        }
+        else if(key_less(word,dict->key)){
+            dict->right = dict_add(dict->left,word,def);
+        }   
+        else{ 
+            /*if the key entered is not minor, is not greater
+            and is not null, then it is equal*/
+            dict->value = value_destroy(dict->value);
+            dict->value=def;
+        }
     }
     assert(value_eq(def, dict_search(dict, word)));
     return dict;

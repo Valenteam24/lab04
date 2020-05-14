@@ -64,7 +64,7 @@ value_t dict_search(dict_t dict, key_t word) {
             }
         }
     }
-    assert((def !=NULL && !dict_exists(dict, word)) || def != NULL);
+   // assert((def !=NULL && !dict_exists(dict, word)) || def != NULL);
     return def;
 }
 
@@ -82,14 +82,13 @@ bool dict_exists(dict_t dict, key_t word) {
             }  
         }
     }
-    
     return exists;
 }
 
 unsigned int dict_length(dict_t dict) {
-    assert(dict != NULL);
+    //assert(dict != NULL);
     unsigned int length = 0u;
-    if(dict->key != NULL){
+    if(dict != NULL){
         length = 1;
         if (dict->left != NULL) {
         length += dict_length(dict->left);
@@ -175,15 +174,15 @@ dict_t dict_remove_all(dict_t dict) {
 }
 
 void dict_dump(dict_t dict, FILE *file) {
-    assert(dict != NULL && file != NULL);
-    if (dict->key != NULL) {
+    assert(file != NULL);
+    if (dict != NULL) {
         key_dump(dict->key, file);
         fprintf(file, ": ");
         value_dump(dict->value, file);
         dict_dump(dict->left, file);
         dict_dump(dict->right, file);
     }
-    assert(dict != NULL);
+    //assert(dict != NULL);
 }
 
 dict_t dict_destroy(dict_t dict) {

@@ -158,12 +158,12 @@ void dict_dump(dict_t dict, FILE *file) {
         key_dump(dict->key, file);
         fprintf(file, ": ");
         value_dump(dict->value, file);
+        fprintf(file, "\n");
         dict_dump(dict->left, file);
         dict_dump(dict->right, file);
     }
-    //assert(dict != NULL);
+ 
 }
-
 dict_t dict_destroy(dict_t dict) {
     if (dict !=NULL){
         dict=dict_remove_all(dict->left);

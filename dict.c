@@ -84,8 +84,8 @@ unsigned int dict_length(dict_t dict) {
 
 // Returns the minimum node of the right sub-tree.
 static dict_t dict_min_node(dict_t dict){
-    dict_t min = dict_empty();
-    if(dict->left->key!=NULL){
+    dict_t min = malloc(sizeof(struct _node_t));
+    if(dict->left!=NULL){
         min = dict_min_node(dict->left);
     }
     else{
@@ -135,6 +135,7 @@ dict_t dict_remove(dict_t dict, key_t word) {
             dict->key = daux->key;
             dict->value = daux->value;
             dict->right = dict_remove(dict->right,daux->key);
+            free(daux);
         }
     }
     assert(!dict_exists(dict, word));
@@ -144,8 +145,10 @@ dict_t dict_remove(dict_t dict, key_t word) {
 
 dict_t dict_remove_all(dict_t dict) {
     if (dict !=NULL){
-        dict->left=dict_remove_all(dict->left);
-        dict->right=dict_remove_all(dict->right);
+        dict->key = key_destroy(dict->key); 
+        dict->value = value_destroy(dict->value);
+        dict->left = dict_remove_all(dict->left);
+        dict->right = dict_remove_all(dict->right);
         free(dict);
         dict = NULL;
     }  
@@ -166,10 +169,10 @@ void dict_dump(dict_t dict, FILE *file) {
 }
 dict_t dict_destroy(dict_t dict) {
     if (dict !=NULL){
+        dict->key = key_destroy(dict->key);
+        dict->value = value_destroy(dict->value);
         dict->left=dict_destroy(dict->left);
         dict->right=dict_destroy(dict->right);
-        dict->key=string_destroy(dict->key);
-        dict->value=string_destroy(dict->value);
         free(dict);
     }
     return NULL;

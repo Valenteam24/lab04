@@ -78,7 +78,6 @@ dict_t dict_remove(dict_t dict, key_t word);
  * POS: {dict --> dict /\ !dict_exists(dict, word)}
  *
  */
-dict_t dict_min_node(dict_t dict);
 dict_t dict_remove_all(dict_t dict);
 /* Removes all the words from the dictionary.
  *

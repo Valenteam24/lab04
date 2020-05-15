@@ -25,19 +25,17 @@ dict_t dict_add(dict_t dict, key_t word, value_t def) {
         new_dict->right=dict_empty();
         dict = new_dict;
     }
-    else {
-        if(key_less(dict->key,word)){
-            dict->right = dict_add(dict->right,word,def);
-        }
-        else if(key_less(word,dict->key)){
-            dict->left = dict_add(dict->left,word,def);
-        }   
-        else{ 
-            /*if the key entered is not minor, is not greater
-            and is not null, then it is equal*/
-            dict->value = value_destroy(dict->value);
-            dict->value=def;
-        }
+    else if(key_less(dict->key,word)){
+        dict->right = dict_add(dict->right,word,def);
+    }
+    else if(key_less(word,dict->key)){
+        dict->left = dict_add(dict->left,word,def);
+    }   
+    else{ 
+        /*if the key entered is not minor, is not greater
+        and is not null, then it is equal*/
+        dict->value = value_destroy(dict->value);
+        dict->value=def;
     }
     assert(value_eq(def, dict_search(dict, word)));
     return dict;
@@ -52,8 +50,7 @@ value_t dict_search(dict_t dict, key_t word) {
             def = dict->value;
         }else if (key_less(word,dict->key)){
             def = dict_search(dict->left,word);
-        } else {
-            /* if it is not minor and is not equal, then it is greater */
+        } else { 
             def = dict_search(dict->right,word);
             }
         } 
@@ -87,26 +84,25 @@ unsigned int dict_length(dict_t dict) {
 
 // Returns the minimum node of the right sub-tree.
 static dict_t dict_min_node(dict_t dict){
-    dict_t min = dict_empty();
-    if(dict->left->key!=NULL){
+    dict_t min = malloc(sizeof(struct _node_t));
+    if(dict->left!=NULL){
         min = dict_min_node(dict->left);
     }
     else{
-        min->key = dict->key;
-        min->value = dict->value;
+        min->key = string_clone(dict->key);
+        min->value = string_clone(dict->value);
     }
     return min;
 }
-
-dict_t dict_remove(dict_t dict, key_t word) { //no anda si la key es un negativo :(
+dict_t dict_remove(dict_t dict, key_t word) {
     //assert(dict != NULL && word != NULL);
-    if (key_less(word,dict->key)){
-
-        dict->left = dict_remove(dict->left,word);
-
-    }else if(key_less(dict->key,word)){
+    if (key_less(dict->key,word)){
 
         dict->right = dict_remove(dict->right,word);
+
+    }else if(key_less(word,dict->key)){
+
+        dict->left = dict_remove(dict->left,word);
 
     } else {
         // no children
@@ -117,7 +113,7 @@ dict_t dict_remove(dict_t dict, key_t word) { //no anda si la key es un negativo
             dict = NULL;
         }
         // one right child 
-          else if ((dict->left==NULL)&&(dict->left==NULL)){
+          else if (dict->left==NULL){
             dict_t daux = dict;
             dict = dict->right;
             daux->key = key_destroy(daux->key);
@@ -125,29 +121,32 @@ dict_t dict_remove(dict_t dict, key_t word) { //no anda si la key es un negativo
             free(daux);
         } 
         // one left child
-          else if((dict->right==NULL)&&(dict->right==NULL)){
+          else if(dict->right==NULL){
             dict_t daux = dict;
             dict = dict->left;
             daux->key = key_destroy(daux->key);
             daux->value = value_destroy(daux->value);
             free(daux);
         }
-        // two children
+        // two children; memory leaks + errors
           else {
             dict_t daux = dict_min_node(dict->right);
+            dict->key = key_destroy(dict->key);
+            dict->value = value_destroy(dict->value);
             dict->key = daux->key;
             dict->value = daux->value;
             dict->right = dict_remove(dict->right,daux->key);
+            free(daux);
         }
     }
-    //assert(!dict_exists(dict, word));
+    assert(!dict_exists(dict, word));
     return dict;
 } 
 
 
 dict_t dict_remove_all(dict_t dict) {
     if (dict !=NULL){
-        dict->key = key_destroy(dict->key);
+        dict->key = key_destroy(dict->key); 
         dict->value = value_destroy(dict->value);
         dict->left = dict_remove_all(dict->left);
         dict->right = dict_remove_all(dict->right);

@@ -18,12 +18,11 @@ dict_t dict_empty() {
 dict_t dict_add(dict_t dict, key_t word, value_t def) {
     assert(word != NULL && def != NULL);
     if(dict==NULL){
-        dict_t new_dict = malloc(sizeof(struct _node_t));
-        new_dict->key=word;
-        new_dict->value=def;
-        new_dict->left=dict_empty();
-        new_dict->right=dict_empty();
-        dict = new_dict;
+        dict = malloc(sizeof(struct _node_t)); //Either we are in a new node, or the dict is empty so we need memory
+        dict->key=word;         //Already has memory, just point to it
+        dict->value=def;        //Already has memory, just point to it
+        dict->left=dict_empty(); //Leave both branches ready
+        dict->right=dict_empty();
     }
     else if(key_less(dict->key,word)){
         dict->right = dict_add(dict->right,word,def);
@@ -44,12 +43,11 @@ dict_t dict_add(dict_t dict, key_t word, value_t def) {
 value_t dict_search(dict_t dict, key_t word) {
     assert(word != NULL);
     value_t def = NULL; 
-   
     if (dict !=NULL ){ 
         if (key_eq(dict->key,word)){
             def = dict->value;
         }else if (key_less(word,dict->key)){
-            def = dict_search(dict->left,word);
+            def = dict_search(dict->left,word); 
         } else { 
             def = dict_search(dict->right,word);
             }
@@ -62,7 +60,20 @@ bool dict_exists(dict_t dict, key_t word) {
     assert(word != NULL);
     bool exists = false;
     if (dict != NULL){
-        exists = key_eq(dict->key,word) || dict_exists(dict->left,word) || dict_exists(dict->right,word);
+        if(key_eq(dict->key,word)){
+            exists = true;
+        }
+        else if (dict_exists(dict->left,word))
+        {
+            exists=true;
+        }
+        else if (dict_exists(dict->right,word))
+        {
+           exists=true;
+        }
+        
+        //Less legible alternative to 3 if's
+        //exists = key_eq(dict->key,word) || dict_exists(dict->left,word) || dict_exists(dict->right,word);
     }
     return exists;
 }
@@ -76,7 +87,7 @@ unsigned int dict_length(dict_t dict) {
             length += dict_length(dict->left);
         }
         if (dict->right != NULL) {
-            length += dict_length(dict->right);
+            length += dict_length(dict->right); 
         }
     }
     return length;
@@ -86,11 +97,11 @@ unsigned int dict_length(dict_t dict) {
 static dict_t dict_min_node(dict_t dict){
     dict_t min = malloc(sizeof(struct _node_t));
     if(dict->left!=NULL){
-        min = dict_min_node(dict->left);
+        min = dict_min_node(dict->left);         //Just keep moving left until we arrive at the min
     }
     else{
-        min->key = string_clone(dict->key);
-        min->value = string_clone(dict->value);
+        min->key = string_clone(dict->key);     //Need new memory for the key
+        min->value = string_clone(dict->value); //Need new memory for the value
     }
     return min;
 }

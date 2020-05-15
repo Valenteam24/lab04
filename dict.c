@@ -95,15 +95,15 @@ unsigned int dict_length(dict_t dict) {
 
 // Returns the minimum node of the right sub-tree.
 static dict_t dict_min_node(dict_t dict){
-    dict_t min = malloc(sizeof(struct _node_t));
+    dict_t min_node = malloc(sizeof(struct _node_t));
     if(dict->left!=NULL){
-        min = dict_min_node(dict->left);         //Just keep moving left until we arrive at the min
+        min_node = dict_min_node(dict->left);         //Just keep moving left until we arrive at the min
     }
     else{
-        min->key = string_clone(dict->key);     //Need new memory for the key
-        min->value = string_clone(dict->value); //Need new memory for the value
+        min_node->key = key_clone(dict->key);     //Need new memory for the key
+        min_node->value = value_clone(dict->value); //Need new memory for the value
     }
-    return min;
+    return min_node;
 }
 dict_t dict_remove(dict_t dict, key_t word) {
     //assert(dict != NULL && word != NULL);
@@ -170,11 +170,11 @@ dict_t dict_remove_all(dict_t dict) {
 void dict_dump(dict_t dict, FILE *file) {
     assert(file != NULL);
     if (dict != NULL) {
+        dict_dump(dict->left, file); //Write the left branch to file, first because readability on dict
         key_dump(dict->key, file); //Write the key to the file
         fprintf(file, ": ");  //Separator
         value_dump(dict->value, file); //Write the value to the file
         fprintf(file, "\n"); //Insert new line
-        dict_dump(dict->left, file); //Write the left branch to file
         dict_dump(dict->right, file); //Write the right branch to file
     }
  

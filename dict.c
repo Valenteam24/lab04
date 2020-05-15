@@ -84,10 +84,15 @@ unsigned int dict_length(dict_t dict) {
 
 // Returns the minimum node of the right sub-tree.
 static dict_t dict_min_node(dict_t dict){
+    dict_t min = malloc(sizeof(struct _node_t));
     if(dict->left!=NULL){
-        dict = dict_min_node(dict->left);
+        min = dict_min_node(dict->left);
     }
-    return dict;
+    else{
+        min->key = string_clone(dict->key);
+        min->value = string_clone(dict->value);
+    }
+    return min;
 }
 dict_t dict_remove(dict_t dict, key_t word) {
     //assert(dict != NULL && word != NULL);
@@ -126,9 +131,12 @@ dict_t dict_remove(dict_t dict, key_t word) {
         // two children; memory leaks + errors
           else {
             dict_t daux = dict_min_node(dict->right);
+            dict->key = string_destroy(dict->key);
+            dict->value = string_destroy(dict->value);
             dict->key = daux->key;
             dict->value = daux->value;
-            dict = dict_remove(dict->right,daux->key);
+            dict->right = dict_remove(dict->right,daux->key);
+            free(daux);
         }
     }
     assert(!dict_exists(dict, word));

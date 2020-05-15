@@ -131,8 +131,8 @@ dict_t dict_remove(dict_t dict, key_t word) {
         // two children; memory leaks + errors
           else {
             dict_t daux = dict_min_node(dict->right);
-            dict->key = string_destroy(dict->key);
-            dict->value = string_destroy(dict->value);
+            dict->key = key_destroy(dict->key);
+            dict->value = value_destroy(dict->value);
             dict->key = daux->key;
             dict->value = daux->value;
             dict->right = dict_remove(dict->right,daux->key);

@@ -98,45 +98,45 @@ dict_t dict_remove(dict_t dict, key_t word) {
     //assert(dict != NULL && word != NULL);
     if (key_less(dict->key,word)){
 
-        dict->right = dict_remove(dict->right,word);
+        dict->right = dict_remove(dict->right,word);   //Keep cycling through the right branch until we arrive
 
-    }else if(key_less(word,dict->key)){
+    }else if(key_less(word,dict->key)){ 
 
-        dict->left = dict_remove(dict->left,word);
+        dict->left = dict_remove(dict->left,word);     //Keep cycling through the left branch until we arrive
 
-    } else {
+    } else { //If the key isnt 
         // no children
         if ((dict->left==NULL)&&(dict->right==NULL)){
-            dict->key = key_destroy(dict->key);
-            dict->value = value_destroy(dict->value);
-            free(dict);
+            dict->key = key_destroy(dict->key);       //Free the memory for the old key
+            dict->value = value_destroy(dict->value); //Free the memory for the old value
+            free(dict);                               //Frees the old dict
             dict = NULL;
         }
         // one right child 
           else if (dict->left==NULL){
-            dict_t daux = dict;
-            dict = dict->right;
-            daux->key = key_destroy(daux->key);
-            daux->value = value_destroy(daux->value);
-            free(daux);
+            dict_t daux = dict;                 //Create a new pointer in memory
+            dict = dict->right;                 //Point the dict to its left branch
+            daux->key = key_destroy(daux->key); //Free the memory for the old key
+            daux->value = value_destroy(daux->value); //Free the memory for the old value
+            free(daux);                               //Frees the old dict
         } 
         // one left child
           else if(dict->right==NULL){
-            dict_t daux = dict;
-            dict = dict->left;
-            daux->key = key_destroy(daux->key);
-            daux->value = value_destroy(daux->value);
-            free(daux);
+            dict_t daux = dict;                 //Create a new pointer in memory
+            dict = dict->left;                  //Point the dict to its left branch
+            daux->key = key_destroy(daux->key); //Free the memory for the old key
+            daux->value = value_destroy(daux->value); //Free the memory for the old value
+            free(daux);                               //Frees the old dict
         }
-        // two children; memory leaks + errors
+        // two children;
           else {
-            dict_t daux = dict_min_node(dict->right);
-            dict->key = key_destroy(dict->key);
-            dict->value = value_destroy(dict->value);
-            dict->key = daux->key;
-            dict->value = daux->value;
-            dict->right = dict_remove(dict->right,daux->key);
-            free(daux);
+            dict_t daux = dict_min_node(dict->right);   //create a new dict containing the min node on the right branch
+            dict->key = key_destroy(dict->key);         //free the memory for the old key
+            dict->value = value_destroy(dict->value);   // free the memory for the old value
+            dict->key = daux->key;                      //point to new key in memory
+            dict->value = daux->value;                  //point to new value in memory
+            dict->right = dict_remove(dict->right,daux->key); //remove the duplicate node
+            free(daux);                                       //free just the dict
         }
     }
     assert(!dict_exists(dict, word));
@@ -146,11 +146,11 @@ dict_t dict_remove(dict_t dict, key_t word) {
 
 dict_t dict_remove_all(dict_t dict) {
     if (dict !=NULL){
-        dict->key = key_destroy(dict->key); 
-        dict->value = value_destroy(dict->value);
-        dict->left = dict_remove_all(dict->left);
-        dict->right = dict_remove_all(dict->right);
-        free(dict);
+        dict->key = key_destroy(dict->key);      //Free the memory for the actual key
+        dict->value = value_destroy(dict->value); //Free the memory for the actual value
+        dict->left = dict_remove_all(dict->left); //Remove everything from the left branch
+        dict->right = dict_remove_all(dict->right);//Remove everything from the right branch
+        free(dict); //Free the dict itself
         dict = NULL;
     }  
     return dict;
@@ -159,22 +159,22 @@ dict_t dict_remove_all(dict_t dict) {
 void dict_dump(dict_t dict, FILE *file) {
     assert(file != NULL);
     if (dict != NULL) {
-        key_dump(dict->key, file);
-        fprintf(file, ": ");
-        value_dump(dict->value, file);
-        fprintf(file, "\n");
-        dict_dump(dict->left, file);
-        dict_dump(dict->right, file);
+        key_dump(dict->key, file); //Write the key to the file
+        fprintf(file, ": ");  //Separator
+        value_dump(dict->value, file); //Write the value to the file
+        fprintf(file, "\n"); //Insert new line
+        dict_dump(dict->left, file); //Write the left branch to file
+        dict_dump(dict->right, file); //Write the right branch to file
     }
  
 }
 dict_t dict_destroy(dict_t dict) {
     if (dict !=NULL){
-        dict->key = key_destroy(dict->key);
-        dict->value = value_destroy(dict->value);
-        dict->left=dict_destroy(dict->left);
-        dict->right=dict_destroy(dict->right);
-        free(dict);
+        dict->key = key_destroy(dict->key); //Free the memory of the key
+        dict->value = value_destroy(dict->value); //Free the memory of the value
+        dict->left=dict_destroy(dict->left);      //destroy the left branch
+        dict->right=dict_destroy(dict->right);    //destroy the right branch
+        free(dict);                               //free the dict
     }
     return NULL;
 }
